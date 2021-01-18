@@ -1,14 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import ProductList from "../components/ProductList";
 import CategoryMenu from "../components/CategoryMenu";
 
 const Home = () => {
-  const [currentCategory, setCategory] = useState("");
-
+// As state is now being managed in the global scope we no longer need to define it within the home page component
   return (
     <div className="container">
-      <CategoryMenu setCategory={setCategory} />
-      <ProductList currentCategory={currentCategory} />
+      <CategoryMenu />
+      <ProductList />
     </div>
   );
 };
