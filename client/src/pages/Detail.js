@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { useQuery } from '@apollo/react-hooks';
 
 import { useStoreContext } from "../utils/GlobalState";
+import { idbPromise } from "../utils/helpers";
 import { 
   REMOVE_FROM_CART,
   UPDATE_CART_QUANTITY,
@@ -34,8 +35,20 @@ function Detail() {
         type: UPDATE_PRODUCTS,
         products: data.products
       });
+      data.products.forEach((product) => {
+        idbPromise('products', 'put', product);
+      });
     }
-  }, [products, data, dispatch, id]);
+    // get cache from idb
+    else if (!loading) {
+      idbPromise('products', 'get').then((indexedProducts) => {
+        dispatch({
+          type: UPDATE_PRODUCTS,
+          products: indexedProducts
+        });
+      });
+    }
+  }, [products, data, loading, dispatch, id]);
 
   // Will allow to add to cart in the global state once this button has been clicked
   const addToCart = () => {

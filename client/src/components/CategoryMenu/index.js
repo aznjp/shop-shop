@@ -5,6 +5,7 @@ import { useQuery } from '@apollo/react-hooks';
 import { QUERY_CATEGORIES } from "../../utils/queries";
 // The first thing we'll do is import our custom useStoreContext() Hook by adding the following code towards the top of the file:
 import { useStoreContext } from "../../utils/GlobalState";
+import { idbPromise } from '../../utils/helpers';
 
 function CategoryMenu() {
   // const { data: categoryData } = useQuery(QUERY_CATEGORIES);
@@ -12,7 +13,8 @@ function CategoryMenu() {
 
   const [state, dispatch] = useStoreContext();
   const { categories } = state;
-  const { data: categoryData } = useQuery(QUERY_CATEGORIES);
+  // Next, update the useQuery() Hook to destructure a loading variable, as the following code shows:
+  const { loading, data: categoryData } = useQuery(QUERY_CATEGORIES);
 
   /* We need to somehow take the categoryData that returns from the useQuery() Hook 
   and use the dispatch() method to set our global state. 
@@ -32,8 +34,19 @@ function CategoryMenu() {
         type: UPDATE_CATEGORIES,
         categories: categoryData.categories
       });
+      // update the useEffect() Hook to also write category data to the categories object store in IndexedDB when we save categories to state. 
+      categoryData.categories.forEach(category => {
+        idbPromise('categories', 'put', category);
+      });
+    } else if (!loading) {
+      idbPromise('categories', 'get').then(categories => {
+        dispatch({
+          type: UPDATE_CATEGORIES,
+          categories: categories
+        });
+      });
     }
-  }, [categoryData, dispatch]);
+  }, [categoryData, loading, dispatch]);
 
   const handleClick = id => {
     dispatch({
