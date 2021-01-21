@@ -1,16 +1,31 @@
-import React from 'react';
+import React, { useEffect } from "react";
 import CartItem from '../CartItem';
 // Auth was imported to conditionally render checkout 
 import Auth from '../../utils/auth';
 
 import { useStoreContext } from '../../utils/GlobalState';
-import { TOGGLE_CART } from '../../utils/actions';
-
+import { TOGGLE_CART, ADD_MULTIPLE_TO_CART } from "../../utils/actions";
+import { idbPromise } from "../../utils/helpers";
 import './style.css';
 
 const Cart = () => {
 
   const [state, dispatch] = useStoreContext();
+
+  /* With this function in place, we're checking to see if state.cart.length is 0, 
+  then executing getCart() to retrieve the items from the cart object store and save it to the global state object. 
+  We dispatch the ADD_MULTIPLE_TO_CART action here because we have an array of items returning from IndexedDB, even if it's just one product saved. 
+  This way we can just dump all of the products into the global state object at once instead of doing it one by one.*/ 
+  useEffect(() => {
+    async function getCart() {
+      const cart = await idbPromise('cart', 'get');
+      dispatch({ type: ADD_MULTIPLE_TO_CART, products: [...cart] });
+    };
+  
+    if (!state.cart.length) {
+      getCart();
+    }
+  }, [state.cart.length, dispatch]);
 
   function toggleCart() {
     dispatch({ type: TOGGLE_CART });

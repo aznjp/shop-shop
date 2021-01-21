@@ -2,6 +2,7 @@ import React from 'react';
 
 import { useStoreContext } from '../../utils/GlobalState';
 import { REMOVE_FROM_CART, UPDATE_CART_QUANTITY } from '../../utils/actions';
+import { idbPromise } from "../../utils/helpers";
 
 const CartItem = ({ item }) => {
   //   Note that we only destructured the dispatch() function from the useStoreContext Hook, 
@@ -13,6 +14,7 @@ const CartItem = ({ item }) => {
       type: REMOVE_FROM_CART,
       _id: item._id
     });
+    idbPromise('cart', 'delete', { ...item });
   };
 
   // Once the quantity of items found in cart is equivalent to 0 then it is removed from the cart
@@ -25,12 +27,16 @@ const CartItem = ({ item }) => {
         type: REMOVE_FROM_CART,
         _id: item._id
       });
+
+      idbPromise('cart', 'delete', { ...item });
     } else {
       dispatch({
         type: UPDATE_CART_QUANTITY,
         _id: item._id,
         purchaseQuantity: parseInt(value)
       });
+
+      idbPromise('cart', 'put', { ...item, purchaseQuantity: parseInt(value) });
     }
   };
 
