@@ -1,16 +1,22 @@
 import React, { useEffect } from "react";
+import { loadStripe } from '@stripe/stripe-js';
+import { useLazyQuery } from '@apollo/react-hooks';
+
 import CartItem from '../CartItem';
 // Auth was imported to conditionally render checkout 
 import Auth from '../../utils/auth';
-
 import { useStoreContext } from '../../utils/GlobalState';
 import { TOGGLE_CART, ADD_MULTIPLE_TO_CART } from "../../utils/actions";
+import { QUERY_CHECKOUT } from '../../utils/queries';
 import { idbPromise } from "../../utils/helpers";
 import './style.css';
+
+const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
 
 const Cart = () => {
 
   const [state, dispatch] = useStoreContext();
+  const [getCheckout, { data }] = useLazyQuery(QUERY_CHECKOUT);
 
   /* With this function in place, we're checking to see if state.cart.length is 0, 
   then executing getCart() to retrieve the items from the cart object store and save it to the global state object. 
@@ -27,6 +33,15 @@ const Cart = () => {
     }
   }, [state.cart.length, dispatch]);
 
+  // This will then watch for changes to the data via the get checkout function in submit checkout and will then redirect to payout via stripe
+  useEffect(() => {
+    if (data) {
+      stripePromise.then((res) => {
+        res.redirectToCheckout({ sessionId: data.checkout.session });
+      });
+    }
+  }, [data]);
+
   function toggleCart() {
     dispatch({ type: TOGGLE_CART });
   }
@@ -37,6 +52,22 @@ const Cart = () => {
       sum += item.price * item.purchaseQuantity;
     });
     return sum.toFixed(2);
+  }
+
+  function submitCheckout() {
+    const productIds = [];
+  
+    getCheckout({
+      variables: { products: productIds }
+    });
+
+    state.cart.forEach((item) => {
+      for (let i = 0; i < item.purchaseQuantity; i++) {
+        productIds.push(item._id);
+      }
+    });
+    // the data variable at the hook at the top of Cart functional component
+    // will contain the checkout session after the query is called using this getCheckout function here
   }
 
   // This will keep the tab closed if the cartOpen state is false and thus show the jsx down below instead
@@ -65,7 +96,7 @@ const Cart = () => {
             <strong>Total: ${calculateTotal()}</strong>
             {
               Auth.loggedIn() ?
-                <button>
+                <button onClick={submitCheckout}>
                   Checkout
                 </button>
                 :
