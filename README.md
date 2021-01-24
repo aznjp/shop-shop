@@ -16,6 +16,8 @@
  As a User I want to be able to consume products in an convenient manner and stack up my shopping cart with items. 
  When I finish filling up my cart I want to be given the ability to purchase the items through a credit card form (which in our case we utilized the Stripe-API). Once those items are bought it will conveniently show me all of my purchase items and then return me back to the original homepage thereafter.
 
+ ![MERN-Shop](./client/public/images/Screenshot.png)
+
  If you wish to utilize this application look for it [here](https://shop-shop1031.herokuapp.com/)
      
 ## Technologies
