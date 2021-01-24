@@ -1,17 +1,22 @@
 import React, {useEffect} from "react";
-import { UPDATE_PRODUCTS } from '../../utils/actions';
-
 import { useQuery } from '@apollo/react-hooks';
 
 import ProductItem from "../ProductItem";
-import { QUERY_PRODUCTS } from "../../utils/queries";
 import spinner from "../../assets/spinner.gif"
-import { useStoreContext } from '../../utils/GlobalState';
+
+import { QUERY_PRODUCTS } from "../../utils/queries";
+import { UPDATE_PRODUCTS } from '../../utils/actions';
 import { idbPromise } from "../../utils/helpers";
+import { useDispatch, useSelector } from 'react-redux';
 
 // Don't forget to remove the mention of currentCategory in the ProductList function's props being passed in!
 function ProductList() {
-  const [state, dispatch] = useStoreContext();  
+
+  const state = useSelector((state) => {
+    return state
+  });
+  const dispatch = useDispatch();
+  
   const { currentCategory } = state;
 
   const { loading, data } = useQuery(QUERY_PRODUCTS);
