@@ -1,17 +1,19 @@
 import React, { useEffect } from 'react';
-import { UPDATE_CATEGORIES, UPDATE_CURRENT_CATEGORY } from '../../utils/actions';
-
 import { useQuery } from '@apollo/react-hooks';
+
 import { QUERY_CATEGORIES } from "../../utils/queries";
-// The first thing we'll do is import our custom useStoreContext() Hook by adding the following code towards the top of the file:
-import { useStoreContext } from "../../utils/GlobalState";
+import { UPDATE_CATEGORIES, UPDATE_CURRENT_CATEGORY } from '../../utils/actions';
 import { idbPromise } from '../../utils/helpers';
+import { useDispatch, useSelector } from 'react-redux';
 
 function CategoryMenu() {
-  // const { data: categoryData } = useQuery(QUERY_CATEGORIES);
-  // const categories = categoryData?.categories || [];
 
-  const [state, dispatch] = useStoreContext();
+  const state = useSelector((state) => {
+    return state
+  });
+  const dispatch = useDispatch();
+
+  
   const { categories } = state;
   // Next, update the useQuery() Hook to destructure a loading variable, as the following code shows:
   const { loading, data: categoryData } = useQuery(QUERY_CATEGORIES);
