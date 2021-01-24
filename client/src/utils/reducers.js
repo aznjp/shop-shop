@@ -10,9 +10,17 @@ import {
   TOGGLE_CART
 } from "./actions";
 
-import { useReducer } from 'react';
+// Define the initial state prior to any actions being taken and will update via the actions imported
+const initialState ={
+  products: [],
+  cart:[],
+  cartOpen:false,
+  categories: [],
+  currentCategory:''
+}
 
-export const reducer = (state, action) => {
+// updated the reducer and defined initial state above
+const reducer = (state = initialState, action) => {
   switch (action.type) {
     // if action type value is the value of `UPDATE_PRODUCTS`, return a new state object with an updated products array
     case UPDATE_PRODUCTS:
@@ -93,9 +101,4 @@ export const reducer = (state, action) => {
   }
 };
 
-/* This function, useProductReducer(), will be used to help initialize our global state object 
-and then provide us with the functionality for updating that state by automatically running it through our custom reducer() function. 
-Think of this as a more in-depth way of using the useState() Hook we've used so much.*/ 
-export function useProductReducer(initialState) {
-  return useReducer(reducer, initialState);
-}
+export default reducer;

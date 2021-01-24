@@ -11,9 +11,9 @@ import Signup from "./pages/Signup";
 import Nav from "./components/Nav";
 import OrderHistory from "./pages/OrderHistory";
 import Success from "./pages/Success";
-
-// import our new custom hook item
-import { StoreProvider } from "./utils/GlobalState";
+// Replace the globalstate.js file and replace with react-redux and new store.js file
+import { Provider } from 'react-redux';
+import store from './utils/store';
 
 const client = new ApolloClient({
   request: (operation) => {
@@ -32,7 +32,8 @@ function App() {
     <ApolloProvider client={client}>
       <Router>
         <div>
-          <StoreProvider>
+          {/* This will then replace the previous store provider */}
+          <Provider store= {store} >
             <Nav />
             <Switch>
               <Route exact path="/" component={Home} />
@@ -43,7 +44,7 @@ function App() {
               <Route exact path="/success" component={Success} />
               <Route component={NoMatch} />
             </Switch>
-          </StoreProvider>
+          </Provider>
         </div>
       </Router>
     </ApolloProvider>

@@ -5,17 +5,23 @@ import { useLazyQuery } from '@apollo/react-hooks';
 import CartItem from '../CartItem';
 // Auth was imported to conditionally render checkout 
 import Auth from '../../utils/auth';
-import { useStoreContext } from '../../utils/GlobalState';
-import { TOGGLE_CART, ADD_MULTIPLE_TO_CART } from "../../utils/actions";
 import { QUERY_CHECKOUT } from '../../utils/queries';
+import { TOGGLE_CART, ADD_MULTIPLE_TO_CART } from "../../utils/actions";
 import { idbPromise } from "../../utils/helpers";
+import {useDispatch, useSelector} from "react-redux";
+
 import './style.css';
 
 const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
 
 const Cart = () => {
 
-  const [state, dispatch] = useStoreContext();
+  // Changed state and dispatch utilized from previous react-context
+  const state = useSelector((state)=> {
+    return state
+  })
+  const dispatch = useDispatch();
+  
   const [getCheckout, { data }] = useLazyQuery(QUERY_CHECKOUT);
 
   /* With this function in place, we're checking to see if state.cart.length is 0, 
